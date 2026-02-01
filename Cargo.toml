@@ -1,0 +1,44 @@
+[package]
+name = "mupdf-rs-mcp-server"
+version = "0.1.0"
+edition = "2021"
+description = "MCP server exposing MuPDF PDF capabilities"
+license = "AGPL-3.0"
+authors = ["tetsuya"]
+repository = "https://github.com/tetsuya/mupdf-rs-mcp-server"
+
+[dependencies]
+# MCP SDK
+rmcp = { version = "0.14", features = ["server", "transport-io", "macros"] }
+
+# MuPDF bindings
+mupdf = "0.6"
+
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+schemars = "0.8"
+
+# Base64 encoding for binary data
+base64 = "0.22"
+
+# Error handling
+thiserror = "1"
+anyhow = "1"
+
+# Logging (use stderr for STDIO transport)
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# UUID for document IDs
+uuid = { version = "1", features = ["v4"] }
+
+[dev-dependencies]
+tokio-test = "0.4"
+
+[[bin]]
+name = "mupdf-mcp-server"
+path = "src/main.rs"

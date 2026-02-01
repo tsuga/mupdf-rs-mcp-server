@@ -1,0 +1,97 @@
+version: '3.8'
+
+services:
+  # Build service - use this to compile the project
+  build:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    volumes:
+      - .:/app
+      - cargo-cache:/usr/local/cargo/registry
+      - target-cache:/app/target
+    working_dir: /app
+    command: cargo build --release
+
+  # Development build with cargo check/test
+  dev:
+    image: rustlang/rust:nightly-bookworm
+    volumes:
+      - .:/app
+      - cargo-cache:/usr/local/cargo/registry
+      - target-cache:/app/target
+    working_dir: /app
+    environment:
+      - CARGO_HOME=/usr/local/cargo
+      - LIBCLANG_PATH=/usr/lib/llvm-14/lib
+    command: bash -c "apt-get update && apt-get install -y pkg-config libfreetype6-dev libharfbuzz-dev libjpeg-dev libopenjp2-7-dev zlib1g-dev libssl-dev libclang-dev && cargo build"
+
+  # Check only (faster)
+  check:
+    image: rustlang/rust:nightly-bookworm
+    volumes:
+      - .:/app
+      - cargo-cache:/usr/local/cargo/registry
+      - target-cache:/app/target
+    working_dir: /app
+    environment:
+      - CARGO_HOME=/usr/local/cargo
+      - LIBCLANG_PATH=/usr/lib/llvm-14/lib
+    command: bash -c "apt-get update && apt-get install -y pkg-config libfreetype6-dev libharfbuzz-dev libjpeg-dev libopenjp2-7-dev zlib1g-dev libssl-dev libclang-dev && cargo check"
+
+  # Run tests
+  test:
+    image: rustlang/rust:nightly-bookworm
+    volumes:
+      - .:/app
+      - cargo-cache:/usr/local/cargo/registry
+      - target-cache:/app/target
+    working_dir: /app
+    environment:
+      - CARGO_HOME=/usr/local/cargo
+      - LIBCLANG_PATH=/usr/lib/llvm-14/lib
+    command: bash -c "apt-get update && apt-get install -y pkg-config libfreetype6-dev libharfbuzz-dev libjpeg-dev libopenjp2-7-dev zlib1g-dev libssl-dev libclang-dev && cargo test"
+
+  # Release build
+  build-release:
+    image: rustlang/rust:nightly-bookworm
+    volumes:
+      - .:/app
+      - cargo-cache:/usr/local/cargo/registry
+      - target-cache:/app/target
+    working_dir: /app
+    environment:
+      - CARGO_HOME=/usr/local/cargo
+      - LIBCLANG_PATH=/usr/lib/llvm-14/lib
+    command: bash -c "apt-get update && apt-get install -y pkg-config libfreetype6-dev libharfbuzz-dev libjpeg-dev libopenjp2-7-dev zlib1g-dev libssl-dev libclang-dev && cargo build --release"
+
+  # Test coverage with cargo-llvm-cov
+  coverage:
+    image: rustlang/rust:nightly-bookworm
+    volumes:
+      - .:/app
+      - cargo-cache:/usr/local/cargo/registry
+      - target-cache:/app/target
+    working_dir: /app
+    environment:
+      - CARGO_HOME=/usr/local/cargo
+      - LIBCLANG_PATH=/usr/lib/llvm-14/lib
+    command: bash -c "apt-get update && apt-get install -y pkg-config libfreetype6-dev libharfbuzz-dev libjpeg-dev libopenjp2-7-dev zlib1g-dev libssl-dev libclang-dev llvm && rustup component add llvm-tools-preview && cargo install cargo-llvm-cov && cargo llvm-cov --html"
+
+  # Coverage with LCOV output (for CI/Codecov)
+  coverage-lcov:
+    image: rustlang/rust:nightly-bookworm
+    volumes:
+      - .:/app
+      - cargo-cache:/usr/local/cargo/registry
+      - target-cache:/app/target
+    working_dir: /app
+    environment:
+      - CARGO_HOME=/usr/local/cargo
+      - LIBCLANG_PATH=/usr/lib/llvm-14/lib
+    command: bash -c "apt-get update && apt-get install -y pkg-config libfreetype6-dev libharfbuzz-dev libjpeg-dev libopenjp2-7-dev zlib1g-dev libssl-dev libclang-dev llvm && rustup component add llvm-tools-preview && cargo install cargo-llvm-cov && cargo llvm-cov --lcov --output-path lcov.info"
+
+volumes:
+  cargo-cache:
+  target-cache:
