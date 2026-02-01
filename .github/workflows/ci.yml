@@ -8,7 +8,6 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  LIBCLANG_PATH: /usr/lib/llvm-14/lib
 
 jobs:
   check:
@@ -29,7 +28,11 @@ jobs:
             zlib1g-dev \
             libssl-dev \
             libclang-dev \
-            libfontconfig1-dev
+            libfontconfig1-dev \
+            llvm-dev
+
+      - name: Set LIBCLANG_PATH
+        run: echo "LIBCLANG_PATH=$(llvm-config --libdir)" >> $GITHUB_ENV
 
       - name: Install Rust nightly
         uses: dtolnay/rust-toolchain@nightly
@@ -68,7 +71,11 @@ jobs:
             zlib1g-dev \
             libssl-dev \
             libclang-dev \
-            libfontconfig1-dev
+            libfontconfig1-dev \
+            llvm-dev
+
+      - name: Set LIBCLANG_PATH
+        run: echo "LIBCLANG_PATH=$(llvm-config --libdir)" >> $GITHUB_ENV
 
       - name: Install Rust nightly
         uses: dtolnay/rust-toolchain@nightly
@@ -108,7 +115,10 @@ jobs:
             libssl-dev \
             libclang-dev \
             libfontconfig1-dev \
-            llvm
+            llvm-dev
+
+      - name: Set LIBCLANG_PATH
+        run: echo "LIBCLANG_PATH=$(llvm-config --libdir)" >> $GITHUB_ENV
 
       - name: Install Rust nightly
         uses: dtolnay/rust-toolchain@nightly
@@ -174,7 +184,11 @@ jobs:
             zlib1g-dev \
             libssl-dev \
             libclang-dev \
-            libfontconfig1-dev
+            libfontconfig1-dev \
+            llvm-dev
+
+      - name: Set LIBCLANG_PATH
+        run: echo "LIBCLANG_PATH=$(llvm-config --libdir)" >> $GITHUB_ENV
 
       - name: Install Rust nightly
         uses: dtolnay/rust-toolchain@nightly
