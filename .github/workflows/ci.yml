@@ -28,7 +28,8 @@ jobs:
             libopenjp2-7-dev \
             zlib1g-dev \
             libssl-dev \
-            libclang-dev
+            libclang-dev \
+            libfontconfig1-dev
 
       - name: Install Rust nightly
         uses: dtolnay/rust-toolchain@nightly
@@ -66,7 +67,8 @@ jobs:
             libopenjp2-7-dev \
             zlib1g-dev \
             libssl-dev \
-            libclang-dev
+            libclang-dev \
+            libfontconfig1-dev
 
       - name: Install Rust nightly
         uses: dtolnay/rust-toolchain@nightly
@@ -105,6 +107,7 @@ jobs:
             zlib1g-dev \
             libssl-dev \
             libclang-dev \
+            libfontconfig1-dev \
             llvm
 
       - name: Install Rust nightly
@@ -170,7 +173,8 @@ jobs:
             libopenjp2-7-dev \
             zlib1g-dev \
             libssl-dev \
-            libclang-dev
+            libclang-dev \
+            libfontconfig1-dev
 
       - name: Install Rust nightly
         uses: dtolnay/rust-toolchain@nightly

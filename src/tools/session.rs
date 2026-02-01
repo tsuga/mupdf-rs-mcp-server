@@ -77,7 +77,10 @@ pub struct ImportDocumentResult {
 }
 
 /// Import a document to the server.
-pub fn import_document(store: &DocumentStore, params: ImportDocumentParams) -> Result<ImportDocumentResult> {
+pub fn import_document(
+    store: &DocumentStore,
+    params: ImportDocumentParams,
+) -> Result<ImportDocumentResult> {
     let doc = params.source.open(params.password.as_deref())?;
     let page_count = doc.page_count()?;
     let document_id = store.insert(doc)?;

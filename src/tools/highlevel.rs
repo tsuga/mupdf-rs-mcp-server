@@ -42,13 +42,12 @@ pub struct OneshotGetBookmarksResult {
 }
 
 /// Recursively collect bookmarks from an outline.
-fn collect_bookmarks(
-    outline: &mupdf::Outline,
-    level: i32,
-    result: &mut Vec<BookmarkEntry>,
-) {
+fn collect_bookmarks(outline: &mupdf::Outline, level: i32, result: &mut Vec<BookmarkEntry>) {
     // Try to get page number from destination
-    let page = outline.dest.as_ref().map(|dest| dest.loc.page_number as i32);
+    let page = outline
+        .dest
+        .as_ref()
+        .map(|dest| dest.loc.page_number as i32);
 
     result.push(BookmarkEntry {
         title: outline.title.clone(),

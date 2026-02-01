@@ -49,6 +49,7 @@ impl Default for MupdfServer {
     }
 }
 
+#[allow(clippy::manual_async_fn)]
 impl ServerHandler for MupdfServer {
     fn get_info(&self) -> InitializeResult {
         InitializeResult {
@@ -82,8 +83,7 @@ impl ServerHandler for MupdfServer {
         &self,
         _request: Option<PaginatedRequestParams>,
         _context: RequestContext<rmcp::service::RoleServer>,
-    ) -> impl std::future::Future<Output = Result<ListToolsResult, McpError>> + Send + '_
-    {
+    ) -> impl std::future::Future<Output = Result<ListToolsResult, McpError>> + Send + '_ {
         async move {
             let tools = vec![
                 // Session Management (STATEFUL API - requires document_id)
@@ -347,10 +347,14 @@ impl ServerHandler for MupdfServer {
                     let params: tools::OneshotGetBookmarksParams =
                         serde_json::from_value(Value::Object(args))
                             .map_err(|e| McpError::invalid_params(e.to_string(), None))?;
-                    tools::oneshot_get_bookmarks(params)
-                        .map(|r| serde_json::to_string(&r).unwrap())
+                    tools::oneshot_get_bookmarks(params).map(|r| serde_json::to_string(&r).unwrap())
                 }
-                _ => return Err(McpError::invalid_params(format!("Unknown tool: {}", name), None)),
+                _ => {
+                    return Err(McpError::invalid_params(
+                        format!("Unknown tool: {}", name),
+                        None,
+                    ))
+                }
             };
 
             match result {

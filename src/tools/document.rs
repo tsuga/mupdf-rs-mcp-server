@@ -65,23 +65,41 @@ pub struct GetMetadataResult {
 }
 
 /// Get document metadata.
-pub fn get_metadata(
-    store: &DocumentStore,
-    params: GetMetadataParams,
-) -> Result<GetMetadataResult> {
+pub fn get_metadata(store: &DocumentStore, params: GetMetadataParams) -> Result<GetMetadataResult> {
     store.with_document(&params.document_id, |doc| {
         Ok(GetMetadataResult {
-            title: doc.metadata(MetadataName::Title).ok().filter(|s| !s.is_empty()),
-            author: doc.metadata(MetadataName::Author).ok().filter(|s| !s.is_empty()),
-            subject: doc.metadata(MetadataName::Subject).ok().filter(|s| !s.is_empty()),
-            keywords: doc.metadata(MetadataName::Keywords).ok().filter(|s| !s.is_empty()),
-            creator: doc.metadata(MetadataName::Creator).ok().filter(|s| !s.is_empty()),
-            producer: doc.metadata(MetadataName::Producer).ok().filter(|s| !s.is_empty()),
+            title: doc
+                .metadata(MetadataName::Title)
+                .ok()
+                .filter(|s| !s.is_empty()),
+            author: doc
+                .metadata(MetadataName::Author)
+                .ok()
+                .filter(|s| !s.is_empty()),
+            subject: doc
+                .metadata(MetadataName::Subject)
+                .ok()
+                .filter(|s| !s.is_empty()),
+            keywords: doc
+                .metadata(MetadataName::Keywords)
+                .ok()
+                .filter(|s| !s.is_empty()),
+            creator: doc
+                .metadata(MetadataName::Creator)
+                .ok()
+                .filter(|s| !s.is_empty()),
+            producer: doc
+                .metadata(MetadataName::Producer)
+                .ok()
+                .filter(|s| !s.is_empty()),
             creation_date: doc
                 .metadata(MetadataName::CreationDate)
                 .ok()
                 .filter(|s| !s.is_empty()),
-            modification_date: doc.metadata(MetadataName::ModDate).ok().filter(|s| !s.is_empty()),
+            modification_date: doc
+                .metadata(MetadataName::ModDate)
+                .ok()
+                .filter(|s| !s.is_empty()),
         })
     })
 }
@@ -116,9 +134,12 @@ pub struct GetOutlinesResult {
 }
 
 /// Convert MuPDF outline to our OutlineEntry format.
-fn convert_outline(outline: &mupdf::Outline, doc: &mupdf::Document) -> OutlineEntry {
+fn convert_outline(outline: &mupdf::Outline) -> OutlineEntry {
     // Try to get page number from destination
-    let page = outline.dest.as_ref().map(|dest| dest.loc.page_number as i32);
+    let page = outline
+        .dest
+        .as_ref()
+        .map(|dest| dest.loc.page_number as i32);
 
     let uri = outline.uri.as_ref().and_then(|u| {
         // Only include external URIs, not internal page references
@@ -130,11 +151,7 @@ fn convert_outline(outline: &mupdf::Outline, doc: &mupdf::Document) -> OutlineEn
     });
 
     // Recursively convert children using 'down' field (it's a Vec)
-    let children: Vec<OutlineEntry> = outline
-        .down
-        .iter()
-        .map(|child| convert_outline(child, doc))
-        .collect();
+    let children: Vec<OutlineEntry> = outline.down.iter().map(convert_outline).collect();
 
     OutlineEntry {
         title: outline.title.clone(),
@@ -145,16 +162,10 @@ fn convert_outline(outline: &mupdf::Outline, doc: &mupdf::Document) -> OutlineEn
 }
 
 /// Get document outlines (table of contents).
-pub fn get_outlines(
-    store: &DocumentStore,
-    params: GetOutlinesParams,
-) -> Result<GetOutlinesResult> {
+pub fn get_outlines(store: &DocumentStore, params: GetOutlinesParams) -> Result<GetOutlinesResult> {
     store.with_document(&params.document_id, |doc| {
         let outline_vec = doc.outlines()?;
-        let outlines: Vec<OutlineEntry> = outline_vec
-            .iter()
-            .map(|outline| convert_outline(outline, doc))
-            .collect();
+        let outlines: Vec<OutlineEntry> = outline_vec.iter().map(convert_outline).collect();
 
         Ok(GetOutlinesResult { outlines })
     })
@@ -264,10 +275,7 @@ pub struct ResolveLinkResult {
 }
 
 /// Resolve a link URI to a destination.
-pub fn resolve_link(
-    store: &DocumentStore,
-    params: ResolveLinkParams,
-) -> Result<ResolveLinkResult> {
+pub fn resolve_link(store: &DocumentStore, params: ResolveLinkParams) -> Result<ResolveLinkResult> {
     store.with_document(&params.document_id, |doc| {
         let dest = doc.resolve_link(&params.uri)?;
         match dest {

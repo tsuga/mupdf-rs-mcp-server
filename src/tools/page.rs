@@ -113,7 +113,8 @@ pub fn get_page_links(
 
         let mut links = Vec::new();
         for link in page.links()? {
-            let target_page = doc.resolve_link(&link.uri)
+            let target_page = doc
+                .resolve_link(&link.uri)
                 .ok()
                 .flatten()
                 .map(|dest| dest.loc.page_number as i32);
@@ -175,10 +176,7 @@ pub struct SearchPageResult {
 }
 
 /// Search for text on a page.
-pub fn search_page(
-    store: &DocumentStore,
-    params: SearchPageParams,
-) -> Result<SearchPageResult> {
+pub fn search_page(store: &DocumentStore, params: SearchPageParams) -> Result<SearchPageResult> {
     store.with_document(&params.document_id, |doc| {
         validate_page_number(doc, params.page)?;
         let page = doc.load_page(params.page)?;
@@ -243,10 +241,7 @@ pub struct RenderPageResult {
 }
 
 /// Render a page to a PNG image.
-pub fn render_page(
-    store: &DocumentStore,
-    params: RenderPageParams,
-) -> Result<RenderPageResult> {
+pub fn render_page(store: &DocumentStore, params: RenderPageParams) -> Result<RenderPageResult> {
     store.with_document(&params.document_id, |doc| {
         validate_page_number(doc, params.page)?;
         let page = doc.load_page(params.page)?;

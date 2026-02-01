@@ -8,7 +8,8 @@ use mupdf_rs_mcp_server::tools::*;
 /// Path to test PDF file.
 const DUMMY_PDF: &[u8] = include_bytes!("fixtures/dummy.pdf");
 
-/// Path to encrypted test PDF file.
+/// Path to encrypted test PDF file (for future password tests).
+#[allow(dead_code)]
 const DUMMY_ENCRYPTED_PDF: &[u8] = include_bytes!("fixtures/dummy-encrypted.pdf");
 
 // ============== Session Management Tests ==============
@@ -19,10 +20,8 @@ mod session {
     #[test]
     fn test_import_document_from_base64() {
         let store = DocumentStore::new();
-        let base64_content = base64::Engine::encode(
-            &base64::engine::general_purpose::STANDARD,
-            DUMMY_PDF,
-        );
+        let base64_content =
+            base64::Engine::encode(&base64::engine::general_purpose::STANDARD, DUMMY_PDF);
 
         let params = ImportDocumentParams {
             source: DocumentSource::Base64 {
@@ -55,10 +54,8 @@ mod session {
         assert!(list.documents.is_empty());
 
         // Import a document
-        let base64_content = base64::Engine::encode(
-            &base64::engine::general_purpose::STANDARD,
-            DUMMY_PDF,
-        );
+        let base64_content =
+            base64::Engine::encode(&base64::engine::general_purpose::STANDARD, DUMMY_PDF);
         let import_result = import_document(
             &store,
             ImportDocumentParams {
@@ -90,10 +87,8 @@ mod session {
     fn test_close_document() {
         let store = DocumentStore::new();
 
-        let base64_content = base64::Engine::encode(
-            &base64::engine::general_purpose::STANDARD,
-            DUMMY_PDF,
-        );
+        let base64_content =
+            base64::Engine::encode(&base64::engine::general_purpose::STANDARD, DUMMY_PDF);
         let import_result = import_document(
             &store,
             ImportDocumentParams {
@@ -142,10 +137,8 @@ mod document {
     use super::*;
 
     fn setup_document(store: &DocumentStore) -> String {
-        let base64_content = base64::Engine::encode(
-            &base64::engine::general_purpose::STANDARD,
-            DUMMY_PDF,
-        );
+        let base64_content =
+            base64::Engine::encode(&base64::engine::general_purpose::STANDARD, DUMMY_PDF);
         import_document(
             store,
             ImportDocumentParams {
@@ -175,7 +168,13 @@ mod document {
 
         assert!(result.page_count > 0);
 
-        close_document(&store, CloseDocumentParams { document_id: doc_id }).unwrap();
+        close_document(
+            &store,
+            CloseDocumentParams {
+                document_id: doc_id,
+            },
+        )
+        .unwrap();
     }
 
     #[test]
@@ -197,7 +196,13 @@ mod document {
         let _ = result.author;
         let _ = result.subject;
 
-        close_document(&store, CloseDocumentParams { document_id: doc_id }).unwrap();
+        close_document(
+            &store,
+            CloseDocumentParams {
+                document_id: doc_id,
+            },
+        )
+        .unwrap();
     }
 
     #[test]
@@ -216,7 +221,13 @@ mod document {
         // May or may not have outlines
         let _ = result.outlines;
 
-        close_document(&store, CloseDocumentParams { document_id: doc_id }).unwrap();
+        close_document(
+            &store,
+            CloseDocumentParams {
+                document_id: doc_id,
+            },
+        )
+        .unwrap();
     }
 }
 
@@ -226,10 +237,8 @@ mod page {
     use super::*;
 
     fn setup_document(store: &DocumentStore) -> String {
-        let base64_content = base64::Engine::encode(
-            &base64::engine::general_purpose::STANDARD,
-            DUMMY_PDF,
-        );
+        let base64_content =
+            base64::Engine::encode(&base64::engine::general_purpose::STANDARD, DUMMY_PDF);
         import_document(
             store,
             ImportDocumentParams {
@@ -261,7 +270,13 @@ mod page {
         assert!(result.width > 0.0);
         assert!(result.height > 0.0);
 
-        close_document(&store, CloseDocumentParams { document_id: doc_id }).unwrap();
+        close_document(
+            &store,
+            CloseDocumentParams {
+                document_id: doc_id,
+            },
+        )
+        .unwrap();
     }
 
     #[test]
@@ -279,7 +294,13 @@ mod page {
 
         assert!(result.is_err());
 
-        close_document(&store, CloseDocumentParams { document_id: doc_id }).unwrap();
+        close_document(
+            &store,
+            CloseDocumentParams {
+                document_id: doc_id,
+            },
+        )
+        .unwrap();
     }
 
     #[test]
@@ -299,7 +320,13 @@ mod page {
         // May or may not have links
         let _ = result.links;
 
-        close_document(&store, CloseDocumentParams { document_id: doc_id }).unwrap();
+        close_document(
+            &store,
+            CloseDocumentParams {
+                document_id: doc_id,
+            },
+        )
+        .unwrap();
     }
 }
 
@@ -309,10 +336,8 @@ mod text {
     use super::*;
 
     fn setup_document(store: &DocumentStore) -> String {
-        let base64_content = base64::Engine::encode(
-            &base64::engine::general_purpose::STANDARD,
-            DUMMY_PDF,
-        );
+        let base64_content =
+            base64::Engine::encode(&base64::engine::general_purpose::STANDARD, DUMMY_PDF);
         import_document(
             store,
             ImportDocumentParams {
@@ -345,7 +370,13 @@ mod text {
         // Text extraction should succeed
         let _ = result.text;
 
-        close_document(&store, CloseDocumentParams { document_id: doc_id }).unwrap();
+        close_document(
+            &store,
+            CloseDocumentParams {
+                document_id: doc_id,
+            },
+        )
+        .unwrap();
     }
 
     #[test]
@@ -366,7 +397,13 @@ mod text {
         // HTML output should contain HTML tags
         assert!(result.text.contains("<") || result.text.is_empty());
 
-        close_document(&store, CloseDocumentParams { document_id: doc_id }).unwrap();
+        close_document(
+            &store,
+            CloseDocumentParams {
+                document_id: doc_id,
+            },
+        )
+        .unwrap();
     }
 
     #[test]
@@ -390,7 +427,13 @@ mod text {
             assert!(parsed.is_ok(), "JSON parsing failed: {}", result.text);
         }
 
-        close_document(&store, CloseDocumentParams { document_id: doc_id }).unwrap();
+        close_document(
+            &store,
+            CloseDocumentParams {
+                document_id: doc_id,
+            },
+        )
+        .unwrap();
     }
 
     #[test]
@@ -412,7 +455,13 @@ mod text {
         // Results may or may not be found
         let _ = result.hits;
 
-        close_document(&store, CloseDocumentParams { document_id: doc_id }).unwrap();
+        close_document(
+            &store,
+            CloseDocumentParams {
+                document_id: doc_id,
+            },
+        )
+        .unwrap();
     }
 
     #[test]
@@ -432,7 +481,13 @@ mod text {
         // Should have some blocks
         let _ = result.blocks;
 
-        close_document(&store, CloseDocumentParams { document_id: doc_id }).unwrap();
+        close_document(
+            &store,
+            CloseDocumentParams {
+                document_id: doc_id,
+            },
+        )
+        .unwrap();
     }
 }
 
@@ -442,10 +497,8 @@ mod render {
     use super::*;
 
     fn setup_document(store: &DocumentStore) -> String {
-        let base64_content = base64::Engine::encode(
-            &base64::engine::general_purpose::STANDARD,
-            DUMMY_PDF,
-        );
+        let base64_content =
+            base64::Engine::encode(&base64::engine::general_purpose::STANDARD, DUMMY_PDF);
         import_document(
             store,
             ImportDocumentParams {
@@ -481,10 +534,8 @@ mod render {
         assert!(result.height > 0);
 
         // Verify it's valid base64
-        let decoded = base64::Engine::decode(
-            &base64::engine::general_purpose::STANDARD,
-            &result.image,
-        );
+        let decoded =
+            base64::Engine::decode(&base64::engine::general_purpose::STANDARD, &result.image);
         assert!(decoded.is_ok());
 
         // Verify PNG magic bytes
@@ -492,7 +543,13 @@ mod render {
         assert!(bytes.len() > 8);
         assert_eq!(&bytes[0..4], &[0x89, 0x50, 0x4E, 0x47]); // PNG signature
 
-        close_document(&store, CloseDocumentParams { document_id: doc_id }).unwrap();
+        close_document(
+            &store,
+            CloseDocumentParams {
+                document_id: doc_id,
+            },
+        )
+        .unwrap();
     }
 
     #[test]
@@ -524,7 +581,13 @@ mod render {
         assert_eq!(result_2x.width, result_1x.width * 2);
         assert_eq!(result_2x.height, result_1x.height * 2);
 
-        close_document(&store, CloseDocumentParams { document_id: doc_id }).unwrap();
+        close_document(
+            &store,
+            CloseDocumentParams {
+                document_id: doc_id,
+            },
+        )
+        .unwrap();
     }
 }
 
@@ -535,10 +598,8 @@ mod oneshot {
 
     #[test]
     fn test_oneshot_get_bookmarks() {
-        let base64_content = base64::Engine::encode(
-            &base64::engine::general_purpose::STANDARD,
-            DUMMY_PDF,
-        );
+        let base64_content =
+            base64::Engine::encode(&base64::engine::general_purpose::STANDARD, DUMMY_PDF);
 
         let result = oneshot_get_bookmarks(OneshotGetBookmarksParams {
             source: DocumentSource::Base64 {
